@@ -1,30 +1,69 @@
-#TIPS      
--Button Object is a prefab that gets instanciated. It already has some Activitator settings changed.   
--Calling Button is the same thing but with different settings.   
--Starting Level is the place the elevator begins at  
--Elevator Positions is the places on the *y axis* that the elevator will travel to.   
--H Space and V Space are for the elevator button instanciation. They get spread out in a grid like pattern and the h and v space changes how big the gaps are.  
--Button blocker and Call button blocker are the objects in the scene that are disabled/enabled when the elevator starts to move. It covers the buttons so that people cant touch them while its moving.  
--Button Floors, Button Calling Floors, and Elevator Animations are automatically filled out when you click "create animation"  
--"this parent" is the parent object for all of the interior buttons  
--"Call Parent" is the parent for the elevator calling buttons for the elevators.   
--Animation duration is how long it takes between each floor. If its 1 for example, and you go from floor 1 to floor 5, it would take 5 seconds. If its 2, and you go from 3 to 0, it would take 6 seconds. (3 x 2)  
--Reset button is temp, it currently wipes everything under "this parent" and wipes the Button Floors, Button Calling Floors and Elevator Animations lists.  
+# Elevator System Setup Guide
 
+## Overview
+...
 
-NOTE:Keep the elevator positions and the elevator object in the same place (Dont keep them in seperate parents or childs) because they use local space.  
-![alt text](https://i.imgur.com/pvZYr3F.png)    
-Make sure to have the elevator buttons parent inside of the elevator object so it moves with it    
-![alt text](https://i.imgur.com/WpEZFN8.png)
+## Components and Settings
 
+### Button Object
+- **Prefab**: The `Button` is a prefab with pre-configured Activator settings.
+- **Calling Button**: Similar to `Button` but with different settings.
 
-For the animations to properly be created, you need to create a folder in Assets called "ElevatorAnimation" so the code can detect it and put it in. You can also change it in the editor script if you want. 
+### Elevator Setup
+- **Starting Level**: The initial floor where the elevator begins.
+- **Elevator Positions**: Defines the `y-axis` positions the elevator will travel to.
+- **H Space & V Space**: Determines the horizontal and vertical spacing for button instantiation, arranging them in a grid pattern.
 
--IF YOUR SETTING UP WITHOUT PREFABS-   
-1.Create an 3d cube called Button. Attach an activator script to it   
-2.Check On Use, and set After time to -1 ![alt text](https://i.imgur.com/HEhsMUP.png)    
-3. Attach another Activator script onto it with After Time set to -1 and On Use set to false    
-3.On the Activate Events section for the first activator, attach the same object onto it and call Activator(1).Activate ![alt text](https://i.imgur.com/G8mmZeC.png)    
-4.Attach a text mesh as a child of the object    
-5.Duplicate the entire object and rename it to CallingButton and change it how you like    
-6.Assign these two to the respected slots in the Elevator Script   
+### Button Blockers
+- **Button Blocker & Call Button Blocker**: Objects in the scene that get enabled/disabled when the elevator starts moving, preventing button interaction.
+
+### Automatic Configuration
+- **Button Floors**, **Button Calling Floors**, and **Elevator Animations**: These fields are automatically filled when you click "Create Animation."
+
+### Parent Objects
+- **"This Parent"**: The parent object for all interior elevator buttons.
+- **"Call Parent"**: The parent object for all elevator call buttons.
+
+### Animation Duration
+- **Duration Calculation**: The time taken between floors. For instance:
+  - If set to 1 and moving from floor 1 to floor 5, it takes 5 seconds.
+  - If set to 2 and moving from floor 3 to floor 0, it takes 6 seconds (3 x 2).
+
+### Reset Button
+- **Temporary Function**: Clears all buttons under "This Parent" and resets the lists for Button Floors, Button Calling Floors, and Elevator Animations.
+
+## Important Notes
+- **Local Space**: Ensure elevator positions and the elevator object share the same parent for accurate local space positioning.
+![Elevator Setup](https://i.imgur.com/pvZYr3F.png)
+
+- **Elevator Buttons Parent**: Place the elevator buttons' parent inside the elevator object so they move together.
+![Button Setup](https://i.imgur.com/WpEZFN8.png)
+
+## Animation Folder
+- **Directory**: Create a folder named `ElevatorAnimation` in the `Assets` directory for animation files. This can be changed in the editor script if needed.
+
+## Manual Setup Without Prefabs
+
+1. **Create Button Object**: 
+   - Create a 3D cube named `Button`.
+   - Attach an `Activator` script.
+   - Enable `On Use` and set `After Time` to -1.
+   ![Activator Setup](https://i.imgur.com/HEhsMUP.png)
+
+2. **Add Second Activator**:
+   - Attach another `Activator` script.
+   - Set `After Time` to -1 and `On Use` to false.
+
+3. **Activate Events**:
+   - In the `Activate Events` section of the first activator, attach the same object and call `Activator(1).Activate`.
+   ![Activate Event](https://i.imgur.com/G8mmZeC.png)
+
+4. **Add Text Mesh**: Attach a text mesh as a child of the button object.
+
+5. **Duplicate for Calling Button**:
+   - Duplicate the `Button` object.
+   - Rename it to `CallingButton` and adjust as needed.
+
+6. **Assign to Elevator Script**: Assign both buttons to the respective slots in the Elevator Script.
+
+Following these instructions will help you set up and configure your elevator system efficiently.
