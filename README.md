@@ -1,8 +1,5 @@
 # Elevator System Setup Guide
 
-## Overview
-...
-
 ## Components and Settings
 
 ### Button Object
@@ -65,5 +62,3 @@
    - Rename it to `CallingButton` and adjust as needed.
 
 6. **Assign to Elevator Script**: Assign both buttons to the respective slots in the Elevator Script.
-
-Following these instructions will help you set up and configure your elevator system efficiently.
