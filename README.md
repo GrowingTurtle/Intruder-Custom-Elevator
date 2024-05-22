@@ -13,5 +13,5 @@
 
 
 NOTE:Keep the elevator positions and the elevator object in the same place (Dont keep them in seperate parents or childs) because they use local space.  
-https://imgur.com/pvZYr3F
+![alt text]([http://url/to/img.png](https://imgur.com/pvZYr3F))
 
