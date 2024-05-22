@@ -22,9 +22,9 @@ For the animations to properly be created, you need to create a folder in Assets
 
 -IF YOUR SETTING UP WITHOUT PREFABS-   
 1.Create an 3d cube called Button. Attach an activator script to it   
-2.Check On Use, and set After time to -1 ![alt text](blob:https://imgur.com/ad020614-af5a-4ff8-847d-bf824f80c61a)    
+2.Check On Use, and set After time to -1 ![alt text](https://i.imgur.com/HEhsMUP.png)    
 3. Attach another Activator script onto it with After Time set to -1 and On Use set to false    
-3.On the Activate Events section for the first activator, attach the same object onto it and call Activator(1).Activate ![alt text](blob:https://imgur.com/3befc02b-c23f-44cc-a75b-f0636114ceee)    
+3.On the Activate Events section for the first activator, attach the same object onto it and call Activator(1).Activate ![alt text](https://i.imgur.com/G8mmZeC.png)    
 4.Attach a text mesh as a child of the object    
 5.Duplicate the entire object and rename it to CallingButton and change it how you like    
 6.Assign these two to the respected slots in the Elevator Script   
