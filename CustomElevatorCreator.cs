@@ -311,9 +311,19 @@ public class CustomElevatorCreator : MonoBehaviour
         ButtonCallingFloors = new List<Transform>();
         for(int i = thisParent.childCount - 1; i >= 0; i--)
         {
-            DestroyImmediate(thisParent.transform.GetChild(i).gameObject);
-            
+            DestroyImmediate(thisParent.transform.GetChild(i).gameObject);           
         }
+        for (int i = callParent.childCount - 1; i >= 0; i--)
+        {
+            DestroyImmediate(callParent.transform.GetChild(i).gameObject);
+
+        }
+        if (GetComponent<Animation>() != null)
+        DestroyImmediate(GetComponent<Animation>());
+        Animation a = gameObject.AddComponent<Animation>();
+        a.playAutomatically = false;
+        a.animatePhysics = true;
+
     }
     public AnimationClip CreateAnimation(Vector3 startPos, Vector3 endPos, int start, int end, int d)
     {
