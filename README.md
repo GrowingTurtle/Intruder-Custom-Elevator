@@ -44,7 +44,7 @@
 1. **Create Button Object**: 
    - Create a 3D cube named `Button`.
    - Attach an `Activator` script.
-   - Enable `On Use` and set `After Time` to -1.
+   - Enable `On Use` and set `After Time` to -1.     
    ![Activator Setup](https://i.imgur.com/HEhsMUP.png)
 
 2. **Add Second Activator**:
@@ -52,7 +52,7 @@
    - Set `After Time` to -1 and `On Use` to false.
 
 3. **Activate Events**:
-   - In the `Activate Events` section of the first activator, attach the same object and call `Activator(1).Activate`.
+   - In the `Activate Events` section of the first activator, attach the same object and call `Activator(1).Activate`.      
    ![Activate Event](https://i.imgur.com/G8mmZeC.png)
 
 4. **Add Text Mesh**: Attach a text mesh as a child of the button object.
