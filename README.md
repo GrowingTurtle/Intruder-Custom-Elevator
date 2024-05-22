@@ -14,7 +14,7 @@
 
 NOTE:Keep the elevator positions and the elevator object in the same place (Dont keep them in seperate parents or childs) because they use local space.  
 ![alt text](https://i.imgur.com/pvZYr3F.png)    
-Make sure to have the elevator buttons parent inside of the elevator object so it moves with it
+Make sure to have the elevator buttons parent inside of the elevator object so it moves with it    
 ![alt text](https://i.imgur.com/WpEZFN8.png)
 
 
