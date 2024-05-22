@@ -9,3 +9,6 @@ Button Floors, Button Calling Floors, and Elevator Animations are automatically 
 "Call Parent" is the parent for the elevator calling buttons for the elevators. 
 Animation duration is how long it takes between each floor. If its 1 for example, and you go from floor 1 to floor 5, it would take 5 seconds. If its 2, and you go from 3 to 0, it would take 6 seconds. (3 x 2)
 Reset button is temp, it currently wipes everything under "this parent" and wipes the Button Floors, Button Calling Floors and Elevator Animations lists.
+
+
+NOTE:Keep the elevator positions and the elevator object in the same place (Dont keep them in seperate parents or childs) because they use local space.
