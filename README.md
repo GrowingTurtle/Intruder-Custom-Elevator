@@ -30,10 +30,10 @@
 - **Temporary Function**: Clears all buttons under "This Parent" and resets the lists for Button Floors, Button Calling Floors, and Elevator Animations.
 
 ## Important Notes
-- **Local Space**: Ensure elevator positions and the elevator object share the same parent for accurate local space positioning.
+- **Local Space**: Ensure elevator positions and the elevator object share the same parent for accurate local space positioning.    
 ![Elevator Setup](https://i.imgur.com/pvZYr3F.png)
 
-- **Elevator Buttons Parent**: Place the elevator buttons' parent inside the elevator object so they move together.
+- **Elevator Buttons Parent**: Place the elevator buttons' parent inside the elevator object so they move together.    
 ![Button Setup](https://i.imgur.com/WpEZFN8.png)
 
 ## Animation Folder
