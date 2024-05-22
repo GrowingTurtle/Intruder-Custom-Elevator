@@ -55,6 +55,8 @@ public class CustomElevatorCreator : MonoBehaviour
             newGroup.transform.parent = thisParent.transform;
             newGroup.transform.localPosition = Vector3.zero;
             ButtonFloors.Add(newGroup.transform);
+            newGroup.transform.localRotation = Quaternion.identity;
+            newGroup.transform.localScale = new Vector3(0.16f, 7.96f, 0.16f);
             int horizontalOffset = 1;
             int verticalOffset = 0;
             for (int i = 0; i < ElevatorPositions.Length; i++)
@@ -75,6 +77,7 @@ public class CustomElevatorCreator : MonoBehaviour
 
                     Activator buttonActivator = Instantiate(buttonObject, newGroup.transform).GetComponent<Activator>();
                     buttonActivator.transform.localPosition = new Vector3(0 + horizontalOffset * ButtonSpaces.x, buttonActivator.transform.localPosition.y - verticalOffset * ButtonSpaces.y, buttonActivator.transform.localPosition.z);
+                    
                     buttonActivator.triggerByUse = true;
                     buttonActivator.animationNames = new string[1];
                     buttonActivator.animationNames[0] = "MoveYAnimationFrom " + floorNum + " to " + i;
@@ -98,6 +101,7 @@ public class CustomElevatorCreator : MonoBehaviour
                     buttonActivator2.objectsToDisable[1] = callButtonBlocker;
                     buttonActivator2.activateAfterTime = -1;
                     horizontalOffset++;
+
                 }
             }
 
