@@ -8,23 +8,28 @@ using System;
 [ExecuteInEditMode]
 public class CustomElevatorCreator : MonoBehaviour
 {
+    [Header("Options")]
     public int animationDuration = 1;
+    public int startingLevel = 0;
+    public Vector2 ButtonSpaces;
     public Transform[] ElevatorPositions;
+    [Header("Extra Info")]
     public List<AnimationClip> elevatorAnimations = new List<AnimationClip>();
-    public GameObject buttonObject;
-    public GameObject callingButton;
+    public List<Transform> ButtonCallingFloors = new List<Transform>();
     public List<Transform> ButtonFloors = new List<Transform>();
 
-    public int startingLevel = 0;
-    public float hSpace;
-    public float vSpace;
+    [Header("References")]
+    public GameObject buttonObject;
+    public GameObject callingButton;
     public GameObject buttonBlocker;
     public GameObject callButtonBlocker;
-
-    public List<Transform> ButtonCallingFloors = new List<Transform>();
-
     public Transform thisParent;
     public Transform callParent;
+
+
+
+
+
 
     public void StartMethod()
     {
@@ -35,7 +40,7 @@ public class CustomElevatorCreator : MonoBehaviour
                 if (i != k)
                 {
                     int duration = animationDuration * (int)Mathf.Abs(i - k);
-                    elevatorAnimations.Add(CreateAnimation(ElevatorPositions[i].position, ElevatorPositions[k].position, i, k, duration));
+                    elevatorAnimations.Add(CreateAnimation(ElevatorPositions[i].localPosition, ElevatorPositions[k].localPosition, i, k, duration));
                 }
 
             }
@@ -50,7 +55,7 @@ public class CustomElevatorCreator : MonoBehaviour
             newGroup.transform.parent = thisParent.transform;
             newGroup.transform.localPosition = Vector3.zero;
             ButtonFloors.Add(newGroup.transform);
-            int horizontalOffset = 0;
+            int horizontalOffset = 1;
             int verticalOffset = 0;
             for (int i = 0; i < ElevatorPositions.Length; i++)
             {
@@ -69,7 +74,7 @@ public class CustomElevatorCreator : MonoBehaviour
 
 
                     Activator buttonActivator = Instantiate(buttonObject, newGroup.transform).GetComponent<Activator>();
-                    buttonActivator.transform.localPosition = new Vector3(0 + horizontalOffset * hSpace, buttonActivator.transform.localPosition.y - verticalOffset * vSpace, buttonActivator.transform.localPosition.z);
+                    buttonActivator.transform.localPosition = new Vector3(0 + horizontalOffset * ButtonSpaces.x, buttonActivator.transform.localPosition.y - verticalOffset * ButtonSpaces.y, buttonActivator.transform.localPosition.z);
                     buttonActivator.triggerByUse = true;
                     buttonActivator.animationNames = new string[1];
                     buttonActivator.animationNames[0] = "MoveYAnimationFrom " + floorNum + " to " + i;
@@ -327,9 +332,6 @@ public class CustomElevatorCreator : MonoBehaviour
     }
     public AnimationClip CreateAnimation(Vector3 startPos, Vector3 endPos, int start, int end, int d)
     {
-
-        
-
         AnimationClip clip = new AnimationClip();
         clip.name = "MoveYAnimation";
 
@@ -343,12 +345,11 @@ public class CustomElevatorCreator : MonoBehaviour
         clip.legacy = true;
         AssetDatabase.CreateAsset(clip, "Assets/ElevatorAnimation/MoveYAnimationFrom " + start + " to " + end + ".anim");
         AssetDatabase.SaveAssets();
- 
-        return clip;
 
+        return clip;
     }
 
-   
+
 }
 
 
@@ -361,7 +362,7 @@ public class CustomObjectEditor : Editor
 
         CustomElevatorCreator myScript = (CustomElevatorCreator)target;
 
-        if (GUILayout.Button("Create Animation"))
+        if (GUILayout.Button("Create"))
         {
             myScript.StartMethod();
         }
