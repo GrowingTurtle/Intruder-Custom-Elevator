@@ -125,7 +125,12 @@ public class CustomElevatorCreator : MonoBehaviour
 
 
         //Starting Level Setup
+        if(GetComponent<Activator>() == null)
+        {
+            gameObject.AddComponent<Activator>();
+        }
         transform.position = ElevatorPositions[startingLevel].position;
+        GetComponent<Activator>().activateAfterTime = 1;
         GetComponent<Activator>().objectsToDisable = new GameObject[ElevatorPositions.Length - 1 + (ElevatorPositions.Length -1) * (ElevatorPositions.Length - 1)];
         GetComponent<Activator>().objectsToEnable[0] = ButtonFloors[startingLevel].gameObject;
 
@@ -329,6 +334,7 @@ public class CustomElevatorCreator : MonoBehaviour
         }
         if (GetComponent<Animation>() != null)
         DestroyImmediate(GetComponent<Animation>());
+
         Animation a = gameObject.AddComponent<Animation>();
         a.playAutomatically = false;
         a.animatePhysics = true;
