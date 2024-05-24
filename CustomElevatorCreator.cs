@@ -2,47 +2,64 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System;
+using TMPro;
+using Homebrew;
 
 #if (UNITY_EDITOR)
 
 [ExecuteInEditMode]
+
 public class CustomElevatorCreator : MonoBehaviour
 {
-    [Header("Options")]
+    [Foldout("Options", true)]
+    [Tooltip("Time it takes for elevators to travel between 2 floors")]
     public int animationDuration = 1;
+    [Tooltip("How long the button blockers should wait until the doors are open && how long the elevator waits before moving")]
     public int doorAnimationDuration;
+    [Tooltip("Which floor the elevator starts on reset")]
     public int startingLevel = 0;
     public Vector2 ButtonSpaces;
     public Transform[] ElevatorPositions;
-    [Header("Extra Info")]
-    public List<AnimationClip> elevatorAnimations = new List<AnimationClip>();
-    public List<Transform> ButtonCallingFloors = new List<Transform>();
-    public List<Transform> ButtonFloors = new List<Transform>();
-    public List<Transform> Doors = new List<Transform>(); 
 
-    [Header("References")]
+    [Foldout("ExtraInfo", true)]
+     List<AnimationClip> elevatorAnimations = new List<AnimationClip>();
+     List<AnimationClip> doorAnimations = new List<AnimationClip>();
+     List<Transform> ButtonCallingFloors = new List<Transform>();
+     List<Transform> ButtonFloors = new List<Transform>();
+     List<Transform> Doors = new List<Transform>();
+
+    [Header("-References-")]
+    [TextArea]
+    [Tooltip("Leave these alone unless you want to change something")]
     public GameObject buttonObject;
     public GameObject callingButton;
     public GameObject buttonBlocker;
     public GameObject callButtonBlocker;
-    public Transform thisParent;
+    public Transform elevatorButtonParent;
     public Transform callParent;
     public Transform DoorGroupParent;
     public GameObject DoorPrefab;
-
-
-
+    public Activator DoorResetter;
+    public AnimationClip DoorOpenAnimation;
+    public Transform floorsPosition;
     //Doors to unlock = From
     //Doors to lock = to
-
     public void StartMethod()
     {
+        floorsPosition.gameObject.SetActive(false);
         //Sets Duration For Door Animation In PrefabButtons
 
         Activator[] ButtonActivators = buttonObject.GetComponents<Activator>();
         ButtonActivators[2].delayTime = doorAnimationDuration;
         Activator[] CallingButtonActivators = callingButton.GetComponents<Activator>();
         CallingButtonActivators[2].delayTime = doorAnimationDuration;
+
+        ButtonActivators[2].objectsToDisable[0] = buttonBlocker;
+        ButtonActivators[2].objectsToDisable[1] = callButtonBlocker;
+
+        CallingButtonActivators[2].objectsToDisable[0] = buttonBlocker;
+        CallingButtonActivators[2].objectsToDisable[1] = callButtonBlocker;
+
 
 
 
@@ -65,11 +82,11 @@ public class CustomElevatorCreator : MonoBehaviour
         {
             GameObject newGroup = new GameObject();
             newGroup.name = "Floor" + floorNum;
-            newGroup.transform.parent = thisParent.transform;
+            newGroup.transform.parent = elevatorButtonParent.transform;
             newGroup.transform.localPosition = Vector3.zero;
             ButtonFloors.Add(newGroup.transform);
             newGroup.transform.localRotation = Quaternion.identity;
-            newGroup.transform.localScale = new Vector3(0.16f, 7.96f, 0.16f);
+            newGroup.transform.localScale = Vector3.one;
             int horizontalOffset = 1;
             int verticalOffset = 0;
             for (int i = 0; i < ElevatorPositions.Length; i++)
@@ -80,6 +97,7 @@ public class CustomElevatorCreator : MonoBehaviour
 
                 if (horizontalOffset > 1)
                     horizontalOffset = 0;
+
                 if (i != floorNum)
                 {
                     
@@ -92,11 +110,11 @@ public class CustomElevatorCreator : MonoBehaviour
                     buttonActivator.transform.localPosition = new Vector3(0 + horizontalOffset * ButtonSpaces.x, buttonActivator.transform.localPosition.y - verticalOffset * ButtonSpaces.y, buttonActivator.transform.localPosition.z);
                     
                     buttonActivator.triggerByUse = true;
-                    buttonActivator.animationNames = new string[2];
+                    buttonActivator.animationNames = new string[3];
                     buttonActivator.animationNames[0] = "MoveYAnimationFrom " + floorNum + " to " + i;
                     buttonActivator.GetComponent<ButtonData>().From = floorNum;
                     buttonActivator.GetComponent<ButtonData>().To = i;
-                    buttonActivator.objectsToAnimate = new GameObject[2];
+                    buttonActivator.objectsToAnimate = new GameObject[3];
                     buttonActivator.objectsToAnimate[0] = this.gameObject;
                     buttonActivator.activateAfterTime = -1;
                     buttonActivator.objectsToDisable = new GameObject[1 + (int)Mathf.Pow(ElevatorPositions.Length, 2)];
@@ -106,7 +124,8 @@ public class CustomElevatorCreator : MonoBehaviour
                     buttonActivator.redoTime = duration;
                     buttonActivator.objectsToEnable[0] = buttonBlocker;
                     buttonActivator.objectsToEnable[1] = callButtonBlocker;
-                    buttonActivator.GetComponentInChildren<TextMesh>().text = i.ToString();
+                    buttonActivator.GetComponentInChildren<TMP_Text>().text = i.ToString();
+                   // buttonActivator.GetComponentInChildren<TextMesh>().text = i.ToString();
                     Activator[] activators = buttonActivator.gameObject.GetComponents<Activator>();
 
                     Activator buttonActivator2 = activators[1];
@@ -115,9 +134,10 @@ public class CustomElevatorCreator : MonoBehaviour
                    // buttonActivator2.objectsToDisable[0] = buttonBlocker;
                     //buttonActivator2.objectsToDisable[1] = callButtonBlocker;
                     buttonActivator2.activateAfterTime = -1;
-                    horizontalOffset++;
 
                 }
+                horizontalOffset++;
+
             }
 
 
@@ -147,9 +167,12 @@ public class CustomElevatorCreator : MonoBehaviour
             gameObject.AddComponent<Activator>();
         }
         transform.position = ElevatorPositions[startingLevel].position;
-        GetComponent<Activator>().activateAfterTime = 1;
-        GetComponent<Activator>().objectsToDisable = new GameObject[ElevatorPositions.Length - 1 + (ElevatorPositions.Length -1) * (ElevatorPositions.Length - 1)];
+        GetComponent<Activator>().activateAfterTime = 2;
+        GetComponent<Activator>().objectsToDisable = new GameObject[ElevatorPositions.Length - 1 + (ElevatorPositions.Length -1) * (ElevatorPositions.Length - 1) + 2]; //+2 is for disabling button blockers
         GetComponent<Activator>().objectsToEnable[0] = ButtonFloors[startingLevel].gameObject;
+        GetComponent<Activator>().objectsToDisable[GetComponent<Activator>().objectsToDisable.Length - 1] = buttonBlocker;
+        GetComponent<Activator>().objectsToDisable[GetComponent<Activator>().objectsToDisable.Length - 2] = callButtonBlocker;
+
 
         int destinationIndex = 0;
         for (int i = 0; i < ElevatorPositions.Length; i++)
@@ -177,9 +200,11 @@ public class CustomElevatorCreator : MonoBehaviour
         //Generates Call Buttons
         for(int k = 0; k < ElevatorPositions.Length; k++)
         {
+            callParent.transform.localPosition = Vector3.zero;
             GameObject newGroup = new GameObject();
             newGroup.name = "Floor " + k + " Call Button Group";
             newGroup.transform.parent = callParent.transform;
+            
             newGroup.transform.position = ElevatorPositions[k].position + new Vector3(2, 0.5f, 0);
             
             ButtonCallingFloors.Add(newGroup.transform);
@@ -191,15 +216,16 @@ public class CustomElevatorCreator : MonoBehaviour
                     int duration = animationDuration * (int)Mathf.Abs(i - k) + doorAnimationDuration;
 
                     Activator newButton = Instantiate(callingButton, newGroup.transform).GetComponent<Activator>();
-                    newButton.objectsToAnimate = new GameObject[2];
+                    newButton.objectsToAnimate = new GameObject[3];
                     newButton.objectsToAnimate[0] = this.gameObject;
-                    newButton.animationNames = new string[2];
+                    newButton.animationNames = new string[3];
                     newButton.animationNames[0] = "MoveYAnimationFrom " + i + " to " + k;
                     newButton.GetComponent<ButtonData>().From = i;
                     newButton.GetComponent<ButtonData>().To = k;
                     newButton.objectsToEnable = new GameObject[ElevatorPositions.Length + 1 + 2]; // the + 2 is for button blockers
                     newButton.objectsToDisable = new GameObject[ElevatorPositions.Length * (ElevatorPositions.Length - 1) + ElevatorPositions.Length];
-                    newButton.GetComponentInChildren<TextMesh>().text = "Call Elevator From " + i + " to " + k;
+                    newButton.GetComponentInChildren<TMP_Text>().text = "Call Elevator From " + i + " to " + k; ;
+                    //newButton.GetComponentInChildren<TextMesh>().text = "Call Elevator From " + i + " to " + k;
                     Activator[] activators = newButton.gameObject.GetComponents<Activator>();
 
                     Activator buttonActivator2 = activators[1];
@@ -311,21 +337,33 @@ public class CustomElevatorCreator : MonoBehaviour
             }
         }
 
-        
 
 
 
+
+
+        //Sets up new door animations
+        for (int i = 0; i < ElevatorPositions.Length; i++)
+        {
+            AnimationClip ac = CreateDoorAnimations(i * animationDuration);          
+            doorAnimations.Add(ac);
+            
+
+        }
 
         //Generates Doors
-        
         for (int k = 0; k < ElevatorPositions.Length; k++)
         {
             GameObject newDoor = Instantiate(DoorPrefab, DoorGroupParent.transform);
             newDoor.transform.position = ElevatorPositions[k].position;
             newDoor.name = "Door Floor:" + k;
-            Doors.Add(newDoor.transform);    
+            Doors.Add(newDoor.transform);
+            foreach(AnimationClip ac in doorAnimations)
+            {
+                Doors[k].GetComponent<Animation>().AddClip(ac, ac.name);
+            }
         }
-
+        
 
 
         //Sets up door animations for every button
@@ -343,14 +381,28 @@ public class CustomElevatorCreator : MonoBehaviour
                 string toSubstring = activator.animationNames[0].Substring(activator.animationNames[0].Length - 1);
                 //Sets which door to close
                
+                
                 activator.objectsToAnimate[1] = Doors[from].gameObject;
+                activator.objectsToAnimate[2] = Doors[to].gameObject;
                 activator.animationNames[1] = "ElevatorDoorClose";
+                //Looks for correct length door animation
+                foreach(AnimationClip ac in doorAnimations)
+                {
+                    if (int.Parse(ac.name.Substring(25)) == animationDuration * (int)Mathf.Abs(from - to) + doorAnimationDuration)
+                        activator.animationNames[2] = ac.name;
+                }
+               
                 //Sets which door to open
+
+
+                /*
                 Activator delayedActivator = activators[1];
                 delayedActivator.objectsToAnimate = new GameObject[1];
                 delayedActivator.animationNames = new string[1];
                 delayedActivator.animationNames[0] = "ElevatorDoorOpen";
                 delayedActivator.objectsToAnimate[0] = Doors[to].gameObject; // changed
+                */
+
 
             }
         }
@@ -368,18 +420,36 @@ public class CustomElevatorCreator : MonoBehaviour
                 //Sets which door to close
 
                 activator.objectsToAnimate[1] = Doors[from].gameObject;
+                activator.objectsToAnimate[2] = Doors[to].gameObject;
                 activator.animationNames[1] = "ElevatorDoorClose";
+                //Looks for correct length door animation
+                foreach (AnimationClip ac in doorAnimations)
+                {
+//                    Debug.LogError(int.Parse(ac.name.Substring(25)) + " with " + ( animationDuration * (int)Mathf.Abs(from - to)) + doorAnimationDuration);
+                    if (int.Parse(ac.name.Substring(25)) == animationDuration * (int)Mathf.Abs(from - to) + doorAnimationDuration)
+                        activator.animationNames[2] = ac.name;
+                }
+
+
                 //Sets which door to open
+
+                /*
                 Activator delayedActivator = activators[1];
                 delayedActivator.objectsToAnimate = new GameObject[1];
                 delayedActivator.animationNames = new string[1];
                 delayedActivator.animationNames[0] = "ElevatorDoorOpen";
                 delayedActivator.objectsToAnimate[0] = Doors[to].gameObject;
+                */
+
+
             }
         }
 
 
-        //SetsStartingLevel
+       
+
+
+        //SetStartingLevel
         for (int floorNums = 0; floorNums < ButtonCallingFloors.Count; floorNums++)
         {
             foreach (Transform child in ButtonCallingFloors[floorNums])
@@ -407,22 +477,49 @@ public class CustomElevatorCreator : MonoBehaviour
             }
         }
 
+        
+        
         GetComponent<Activator>().objectsToAnimate = new GameObject[1];
         GetComponent<Activator>().animationNames = new string[1];
         GetComponent<Activator>().objectsToAnimate[0] = Doors[startingLevel].gameObject;
         GetComponent<Activator>().animationNames[0] = "ElevatorDoorOpen";
 
+        DoorResetter.objectsToAnimate = new GameObject[ElevatorPositions.Length];
+        DoorResetter.animationNames = new string[ElevatorPositions.Length];
+        for (int i = 0; i < ElevatorPositions.Length; i++)
+        {
+            DoorResetter.objectsToAnimate[i] = Doors[i].gameObject;
+        }
+        for (int i = 0; i < ElevatorPositions.Length; i++)
+        {
+            DoorResetter.animationNames[i] = "ElevatorDoorClose";
+        }
+
+        /* FOLLOWING HANDLED BY RESET PROXY
+         * 
+        if (startingLevel == ElevatorPositions.Length - 1)
+            GetComponent<Activator>().animationNames[1] = ("MoveYAnimationFrom " + (startingLevel - 1) + " to " + startingLevel);
+        else
+            GetComponent<Activator>().animationNames[1] = ("MoveYAnimationFrom " + (startingLevel + 1) + " to " + startingLevel);
+         
+        
+        */
+
+
+
 
     }
     public void Reset()
     {
+        floorsPosition.gameObject.SetActive(true);
         elevatorAnimations = new List<AnimationClip>();
+        doorAnimations = new List<AnimationClip>();
         ButtonFloors = new List<Transform>();
         ButtonCallingFloors = new List<Transform>();
         Doors = new List<Transform>();
-        for(int i = thisParent.childCount - 1; i >= 0; i--)
+        for(int i = elevatorButtonParent.childCount - 1; i >= 0; i--)
         {
-            DestroyImmediate(thisParent.transform.GetChild(i).gameObject);           
+            DestroyImmediate(elevatorButtonParent.transform.GetChild(i).gameObject);           
         }
         for (int i = callParent.childCount - 1; i >= 0; i--)
         {
@@ -440,6 +537,7 @@ public class CustomElevatorCreator : MonoBehaviour
         a.animatePhysics = true;
 
     }
+
     public AnimationClip CreateAnimation(Vector3 startPos, Vector3 endPos, int start, int end, int d)
     {
         AnimationClip clip = new AnimationClip();
@@ -449,8 +547,14 @@ public class CustomElevatorCreator : MonoBehaviour
         keysY[0] = new Keyframe(0f, startPos.y);
         keysY[1] = new Keyframe(doorAnimationDuration, startPos.y);
         keysY[2] = new Keyframe(d + doorAnimationDuration, endPos.y);
-
         AnimationCurve curveY = new AnimationCurve(keysY);
+
+        for (int i = 0; i < keysY.Length; i++)
+        {
+            AnimationUtility.SetKeyLeftTangentMode(curveY, i, AnimationUtility.TangentMode.Linear);
+            AnimationUtility.SetKeyRightTangentMode(curveY, i, AnimationUtility.TangentMode.Linear);
+
+        }
 
         clip.SetCurve("", typeof(Transform), "localPosition.y", curveY);
         clip.legacy = true;
@@ -460,6 +564,37 @@ public class CustomElevatorCreator : MonoBehaviour
         return clip;
     }
 
+
+    public AnimationClip CreateDoorAnimations(int duration)
+    {
+        AnimationClip newClip = new AnimationClip();
+        newClip.name = DoorOpenAnimation.name + "WithDelay" + (duration + doorAnimationDuration);
+        foreach (EditorCurveBinding binding in AnimationUtility.GetCurveBindings(DoorOpenAnimation))
+        {
+            AnimationCurve originalCurve = AnimationUtility.GetEditorCurve(DoorOpenAnimation, binding);
+            Keyframe[] originalKeys = originalCurve.keys;
+
+            // Create new keyframes with the delay added
+            Keyframe[] newKeys = new Keyframe[originalKeys.Length + 1];
+            newKeys[0] = originalKeys[0];
+            for (int i = 1; i < originalKeys.Length + 1; i++)
+            {
+                Keyframe originalKey = originalKeys[i - 1];
+                newKeys[i] = new Keyframe(originalKey.time + duration + doorAnimationDuration, originalKey.value, originalKey.inTangent, originalKey.outTangent);
+            }
+
+            // Create a new curve with the delayed keyframes
+            AnimationCurve newCurve = new AnimationCurve(newKeys);
+            newClip.SetCurve(binding.path, binding.type, binding.propertyName, newCurve);
+            
+        }
+        newClip.legacy = true;
+        // Save the new animation clip as an asset
+        AssetDatabase.CreateAsset(newClip, "Assets/ElevatorAnimation/DoorAnimations/" + newClip.name + ".anim");
+        AssetDatabase.SaveAssets();
+
+        return newClip;
+    }
 
 }
 
@@ -478,6 +613,7 @@ public class CustomObjectEditor : Editor
             myScript.StartMethod();
         }
 
+        
         if (GUILayout.Button("Reset"))
         {
             myScript.Reset();
